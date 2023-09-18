@@ -28,6 +28,9 @@ class Fee
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $company = null;
 
+    #[ORM\ManyToOne(inversedBy: 'fees')]
+    private ?User $user = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -77,6 +80,18 @@ class Fee
     public function setCompany(?string $company): static
     {
         $this->company = $company;
+
+        return $this;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): static
+    {
+        $this->user = $user;
 
         return $this;
     }

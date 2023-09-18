@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -25,6 +27,14 @@ class User
 
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $birthday = null;
+
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Fee::class)]
+    private Collection $fees;
+
+    public function __construct()
+    {
+        $this->fees = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -75,6 +85,36 @@ class User
     public function setBirthday(?\DateTimeInterface $birthday): static
     {
         $this->birthday = $birthday;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Fee>
+     */
+    public function getFees(): Collection
+    {
+        return $this->fees;
+    }
+
+    public function addFee(Fee $fee): static
+    {
+        if (!$this->fees->contains($fee)) {
+            $this->fees->add($fee);
+            $fee->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeFee(Fee $fee): static
+    {
+        if ($this->fees->removeElement($fee)) {
+            // set the owning side to null (unless already changed)
+            if ($fee->getUser() === $this) {
+                $fee->setUser(null);
+            }
+        }
 
         return $this;
     }
