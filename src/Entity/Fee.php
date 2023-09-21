@@ -6,6 +6,7 @@ use ApiPlatform\Metadata\ApiResource;
 use App\Repository\FeeRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints\Choice;
 
 #[ORM\Entity(repositoryClass: FeeRepository::class)]
 #[ApiResource()]
@@ -25,7 +26,10 @@ class Fee
     #[ORM\Column(length: 255)]
     private ?string $type = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
+    #[
+        ORM\Column(length: 255, nullable: true),
+        Choice(['essence', 'péage', 'repas', 'conférence'])
+    ]
     private ?string $company = null;
 
     #[ORM\ManyToOne(inversedBy: 'fees')]
