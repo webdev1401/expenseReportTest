@@ -2,34 +2,41 @@
 
 namespace App\Entity;
 
-use ApiPlatform\Metadata\ApiResource;
-use App\Repository\FeeRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Validator\Constraints\Choice;
+use App\Repository\FeeRepository;
+use ApiPlatform\Metadata\ApiResource;
+use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: FeeRepository::class)]
-#[ApiResource()]
+#[ApiResource(
+    normalizationContext: ['groups' => ['read']],
+    denormalizationContext: ['groups' => ['write']],
+)]
 class Fee
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['read'])]
     private ?int $id = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
+    #[Groups(['read', 'write'])]
     private ?\DateTimeInterface $date = null;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 6, scale: 2)]
+    #[Groups(['read', 'write'])]
     private ?string $amount = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\Choice(['essence', 'péage', 'repas', 'conférence'])]
+    #[Groups(['read', 'write'])]
     private ?string $type = null;
 
-    #[
-        ORM\Column(length: 255, nullable: true),
-        Choice(['essence', 'péage', 'repas', 'conférence'])
-    ]
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['read', 'write'])]
     private ?string $company = null;
 
     #[ORM\ManyToOne(inversedBy: 'fees')]
